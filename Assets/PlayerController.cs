@@ -1,19 +1,22 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    bool attack_flag = false;
-    float attack_time = 1.0f;
+    public bool attack_flag = false;
+    float attack_time = 0.5f;
     float attack_cnt = 0.0f;
-    // Start is called before the first frame update
+    private SpriteRenderer spriteRenderer; // 存储 SpriteRenderer 组件
+    private Color originalColor; // 记录原本颜色
+
     void Start()
     {
         attack_cnt = 0.0f;
+        spriteRenderer = GetComponent<SpriteRenderer>(); // 获取 SpriteRenderer
+        originalColor = spriteRenderer.color; // 记录初始颜色
     }
 
-    // Update is called once per frame
     void Update()
     {
         attack_cnt += Time.deltaTime;
@@ -21,35 +24,40 @@ public class PlayerController : MonoBehaviour
         if (attack_cnt >= attack_time)
         {
             attack_flag = false;
-            //GetComponent<SpriteRenderer>().sprite = false;
+            spriteRenderer.color = originalColor; // 恢复原本颜色
         }
     }
 
     private void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.A))
+        if (attack_flag == false)
         {
-            transform.localPosition += Vector3.left * 0.3f;
+            if (Input.GetKey(KeyCode.A))
+            {
+                transform.localPosition += Vector3.left * 0.4f;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                transform.localPosition += Vector3.right * 0.4f;
+            }
         }
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.localPosition += Vector3.right * 0.3f;
-        }
+
         if (Input.GetKey(KeyCode.Space))
         {
             attack_flag = true;
-            attack_cnt=0.0f;
-
+            attack_cnt = 0.0f;
+            spriteRenderer.color = Color.magenta; // 攻击时变红
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ball"))
-        {/*
-            collision.rigidbody.AddForce(Vector2.up * 10.0f,ForceMode2D.Impulse);*/
+        {
+            if (attack_flag)
+            {
+                collision.rigidbody.AddForce(Vector2.up * 10.0f, ForceMode2D.Impulse);
+            }
         }
     }
 }
-
-
