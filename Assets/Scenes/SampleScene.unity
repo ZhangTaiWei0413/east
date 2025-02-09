@@ -134,9 +134,9 @@ GameObject:
   - component: {fileID: 48803039}
   - component: {fileID: 48803038}
   - component: {fileID: 48803037}
-  m_Layer: 0
-  m_Name: wall
-  m_TagString: Untagged
+  m_Layer: 3
+  m_Name: Wall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -194,7 +194,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48803036}
-  m_BodyType: 2
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -384,9 +384,9 @@ GameObject:
   - component: {fileID: 555446711}
   - component: {fileID: 555446714}
   - component: {fileID: 555446713}
-  m_Layer: 0
-  m_Name: wall
-  m_TagString: Untagged
+  m_Layer: 3
+  m_Name: Wall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -511,7 +511,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 555446709}
-  m_BodyType: 2
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -545,7 +545,7 @@ GameObject:
   - component: {fileID: 1201115695}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -562,7 +562,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c66d971049a0e248b28af815d5630ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attack_flag: 0
+  bulletPrefab: {fileID: 2952838449763887668, guid: 3f96242383fbd5b4ea0bd19fcc54c863, type: 3}
+  BOOM: {fileID: 3933271898585314972, guid: 19bdbdbf19366a54a92248bd7bd7e6d6, type: 3}
+  attack_flag: 1
+  slide_attack_flag: 0
+  bullet_flag: 0
+  boom_flag: 0
+  slide_l_or_r: 0
+  bullet_exists: 0
 --- !u!50 &1201115691
 Rigidbody2D:
   serializedVersion: 4
@@ -651,7 +658,7 @@ Transform:
   m_GameObject: {fileID: 1201115689}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.69, y: -4.18, z: 0}
+  m_LocalPosition: {x: -1.71, y: -4.11, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -704,9 +711,9 @@ GameObject:
   - component: {fileID: 1263207126}
   - component: {fileID: 1263207125}
   - component: {fileID: 1263207124}
-  m_Layer: 0
-  m_Name: wall
-  m_TagString: Untagged
+  m_Layer: 3
+  m_Name: Wall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -764,7 +771,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1263207123}
-  m_BodyType: 2
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -863,9 +870,9 @@ GameObject:
   - component: {fileID: 1655237790}
   - component: {fileID: 1655237789}
   - component: {fileID: 1655237788}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: the cube
-  m_TagString: Untagged
+  m_TagString: the cube
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1033,9 +1040,9 @@ GameObject:
   - component: {fileID: 1788332205}
   - component: {fileID: 1788332204}
   - component: {fileID: 1788332203}
-  m_Layer: 0
-  m_Name: wall
-  m_TagString: Untagged
+  m_Layer: 3
+  m_Name: Wall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1093,7 +1100,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1788332202}
-  m_BodyType: 2
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -1194,7 +1201,7 @@ GameObject:
   - component: {fileID: 1975254647}
   m_Layer: 18
   m_Name: Ball
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1334,7 +1341,7 @@ Transform:
   m_GameObject: {fileID: 1975254646}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.03, y: 3.92, z: 0}
+  m_LocalPosition: {x: -3.5, y: -0.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
