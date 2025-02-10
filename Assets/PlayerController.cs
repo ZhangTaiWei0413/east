@@ -21,8 +21,29 @@ public class PlayerController : MonoBehaviour
     float slide_attack_cnt = 0.0f;
     float bullet_attack_cnt = 0.0f;
     float boom_attack_cnt = 0.0f;
-    private SpriteRenderer spriteRenderer; // 存储 SpriteRenderer 组件
-    private Color originalColor; // 记录原本颜色
+    //圖片控制
+    public Sprite idleSprite;   
+    public Sprite walkSprite1; 
+    public Sprite walkSprite2; 
+    public Sprite attackSprite;
+    public Sprite slideSprite; 
+    public Sprite bulletSprite; 
+
+    public Vector2 idleSize = Vector2.one;
+    public Vector2 walkSize = Vector2.one;
+    public Vector2 attackSize = Vector2.one;
+    public Vector2 slideSize = Vector2.one;
+    public Vector2 bulletSize = Vector2.one;
+
+    public Vector2 idleOffset = Vector2.zero;
+    public Vector2 walkOffset = Vector2.zero;
+    public Vector2 attackOffset = Vector2.zero;
+    public Vector2 slideOffset = Vector2.zero;
+    public Vector2 bulletOffset = Vector2.zero;
+
+    private float walkTimer = 0.0f;
+    public float walkswitch = 0.25f;
+    private SpriteRenderer spriteRenderer;
 
     void Start()
     {
@@ -30,8 +51,8 @@ public class PlayerController : MonoBehaviour
         slide_attack_cnt = 0.0f;
         bullet_attack_cnt = 0.0f;
         boom_attack_cnt = 0.0f;
-        spriteRenderer = GetComponent<SpriteRenderer>(); // 获取 SpriteRenderer
-        originalColor = spriteRenderer.color; // 记录初始颜色
+        spriteRenderer = transform.Find("SpriteContainer").GetComponent<SpriteRenderer>();
+        SetSprite(idleSprite, idleSize, idleOffset);
     }
 
     void Update()//攻擊狀態
@@ -63,7 +84,6 @@ public class PlayerController : MonoBehaviour
 
         if (slide_attack_cnt >= slide_attack_time && attack_cnt >= attack_time && bullet_attack_cnt >= bullet_attack_time)
         {
-            spriteRenderer.color = originalColor; // 恢复原本颜色
         }
 
         if (Input.GetKeyDown(KeyCode.Q) && boom_flag == false)
@@ -86,6 +106,31 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+
+        if (!slide_attack_flag && !attack_flag && !bullet_flag)
+        {
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+            {
+                walkTimer += Time.deltaTime;
+                if (walkTimer >= walkswitch)
+                {
+                    walkTimer = 0;
+                    SetSprite((spriteRenderer.sprite == walkSprite1) ? walkSprite2 : walkSprite1, walkSize, walkOffset);
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    spriteRenderer.flipX = false;
+                }
+                else
+                {
+                    spriteRenderer.flipX = true;
+                }
+            }
+            else
+            {
+                SetSprite(idleSprite, idleSize, idleOffset);
+            }     
+        }
     }
 
     private void FixedUpdate()//移動&攻擊指令
@@ -99,7 +144,7 @@ public class PlayerController : MonoBehaviour
                 bullet_flag = true;
                 bullet_exists = true;
                 bullet_attack_cnt = 0.0f;
-                spriteRenderer.color = new Color(1.0f, 0.5f, 0.0f);
+                SetSprite(bulletSprite, bulletSize, bulletOffset);
                 InstantiateBullet();
                 
             }
@@ -113,7 +158,8 @@ public class PlayerController : MonoBehaviour
                         slide_l_or_r = true;
                         slide_attack_flag = true;
                         slide_attack_cnt = 0.0f;
-                        spriteRenderer.color = Color.green;
+                        SetSprite(slideSprite, slideSize, slideOffset);
+                        spriteRenderer.flipX = true;
                     }
                     else if (attack_flag == false)
                     {
@@ -129,7 +175,8 @@ public class PlayerController : MonoBehaviour
                         slide_l_or_r = false;
                         slide_attack_flag = true;
                         slide_attack_cnt = 0.0f;
-                        spriteRenderer.color = Color.green;
+                        SetSprite(slideSprite, slideSize, slideOffset);
+                        spriteRenderer.flipX = false;
                     }
                     else if (attack_flag == false)
                     {
@@ -142,7 +189,15 @@ public class PlayerController : MonoBehaviour
                 {
                     attack_flag = true;
                     attack_cnt = 0.0f;
-                    spriteRenderer.color = Color.magenta; // 攻击时变红
+                    GameObject ball = GameObject.FindWithTag("Ball");
+                    if (ball != null)
+                    {
+                        float playerX = transform.position.x;
+                        float ballX = ball.transform.position.x;
+                        spriteRenderer.flipX = playerX > ballX;
+                    }
+
+                    SetSprite(attackSprite, attackSize, attackOffset);
                 }
             }
 
@@ -175,8 +230,44 @@ public class PlayerController : MonoBehaviour
         {
             if (attack_flag || slide_attack_flag)
             {
-                collision.rigidbody.AddForce(Vector2.up * 10.0f, ForceMode2D.Impulse);
+                Rigidbody2D ballRb = collision.rigidbody;
+
+                Vector2 collisionPoint = collision.contacts[0].point;
+                Vector2 playerPosition = transform.position;
+                Vector2 collisionDirection = (collisionPoint - playerPosition).normalized;
+
+                float angle = Mathf.Atan2(collisionDirection.y, collisionDirection.x) * Mathf.Rad2Deg;
+                float horizontalFactor = Mathf.Abs(Mathf.Sin(angle * Mathf.Deg2Rad));
+                float verticalFactor = Mathf.Abs(Mathf.Cos(angle * Mathf.Deg2Rad));
+                float horizontalStrength = Mathf.Lerp(1.0f, 3.0f, horizontalFactor);
+                float verticalStrength = Mathf.Lerp(3.0f, 1.0f, verticalFactor);
+
+                Vector2 forceDirection = new Vector2(collisionDirection.x * horizontalStrength, verticalStrength).normalized;
+
+                float ballSpeed = ballRb.velocity.magnitude;
+                float speedMultiplier = Mathf.Clamp(ballSpeed / 5.0f, 0.8f, 1.5f);
+
+                if (ballSpeed < 2.0f)
+                {
+                    speedMultiplier = 1.2f;
+                }
+
+                float normalizedRotationFactor = Mathf.Abs(Mathf.Sin(angle * Mathf.Deg2Rad));
+                float rotationSpeed = Mathf.Lerp(10f, 80f, normalizedRotationFactor);
+                float rotationMultiplier = 8.0f;
+                float angularForce = rotationSpeed * rotationMultiplier * -Mathf.Sign(collisionDirection.x);
+
+                ballRb.velocity = Vector2.zero;
+                ballRb.AddForce(forceDirection * 10.0f * speedMultiplier, ForceMode2D.Impulse);
+                ballRb.angularVelocity = angularForce;
             }
         }
+    }
+
+    void SetSprite(Sprite newSprite, Vector2 size, Vector2 offset)
+    {
+        spriteRenderer.sprite = newSprite;
+        spriteRenderer.transform.localScale = size;
+        spriteRenderer.transform.localPosition = (Vector3)offset; 
     }
 }
