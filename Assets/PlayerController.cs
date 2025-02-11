@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public bool bullet_exists = false;
 
     float attack_time = 0.5f;
-    float slide_attack_time = 0.3f;
+    float slide_attack_time = 0.15f;
     float bullet_attack_time = 0.3f;
     float boom_attack_time = 0.3f;
     float boom_attack_cool = 5.0f;
@@ -24,18 +24,20 @@ public class PlayerController : MonoBehaviour
     float bullet_attack_cnt = 0.0f;
     float boom_attack_cnt = 0.0f;
 
-    public float playermove = 0.1f;
-    public float playerslide = 0.3f;
+    public float playermove = 9.0f;
+    public float playerslide = 27.0f;
     public int score;
     public int life;
+    private Rigidbody2D rb;
+    private bool isTouchingWallOrSide;
 
     //圖片控制
-    public Sprite idleSprite;   
-    public Sprite walkSprite1; 
-    public Sprite walkSprite2; 
+    public Sprite idleSprite;
+    public Sprite walkSprite1;
+    public Sprite walkSprite2;
     public Sprite attackSprite;
-    public Sprite slideSprite; 
-    public Sprite bulletSprite; 
+    public Sprite slideSprite;
+    public Sprite bulletSprite;
 
     public Vector2 idleSize = Vector2.one;
     public Vector2 walkSize = Vector2.one;
@@ -60,6 +62,8 @@ public class PlayerController : MonoBehaviour
         bullet_attack_cnt = 0.0f;
         boom_attack_cnt = 0.0f;
         life = 20;
+        rb = GetComponent<Rigidbody2D>();
+        rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
         spriteRenderer = transform.Find("SpriteContainer").GetComponent<SpriteRenderer>();
         SetSprite(idleSprite, idleSize, idleOffset);
         GameObject ball = GameObject.FindGameObjectWithTag("Ball");
@@ -102,6 +106,7 @@ public class PlayerController : MonoBehaviour
         {
             if (hasLaunched == true && Input.GetKey(KeyCode.E) && bullet_exists == false)
             {
+                rb.velocity = Vector2.zero;
                 attack_flag = false;
                 slide_attack_flag = false;
                 bullet_flag = true;
@@ -143,7 +148,7 @@ public class PlayerController : MonoBehaviour
                             SetSprite(walkSprite2, walkSize, walkOffset);
                         }
                         spriteRenderer.flipX = true;
-                        transform.localPosition += Vector3.left * playermove * Time.deltaTime * 60f;
+                        rb.velocity = new Vector2(-1 * playermove, rb.velocity.y);
                     }
                 }
 
@@ -175,13 +180,14 @@ public class PlayerController : MonoBehaviour
                             SetSprite(walkSprite2, walkSize, walkOffset);
                         }
                         spriteRenderer.flipX = false;
-                        transform.localPosition += Vector3.right * playermove * Time.deltaTime * 60f;
+                        rb.velocity = new Vector2(1 * playermove, rb.velocity.y);
                     }
 
                 }
 
                 if (Input.GetKey(KeyCode.Space) && attack_flag == false)
                 {
+                    rb.velocity = Vector2.zero;
                     attack_flag = true;
                     attack_cnt = 0.0f;
                     GameObject ball = GameObject.FindWithTag("Ball");
@@ -202,11 +208,11 @@ public class PlayerController : MonoBehaviour
         {
             if ((slide_l_or_r))
             {
-                transform.localPosition += Vector3.left * playerslide * Time.deltaTime * 60f;
+                rb.velocity = new Vector2(-1 * playerslide, rb.velocity.y);
             }
             else
             {
-                transform.localPosition += Vector3.right * playerslide * Time.deltaTime * 60f;
+                rb.velocity = new Vector2(1 * playerslide, rb.velocity.y);
             }
         }
 
@@ -233,6 +239,7 @@ public class PlayerController : MonoBehaviour
             {
                 walkTimer = 0;
                 SetSprite(idleSprite, idleSize, idleOffset);
+                rb.velocity = Vector2.zero;   
             }
         }
     }
@@ -242,10 +249,9 @@ public class PlayerController : MonoBehaviour
         bool hasLaunched = ballScript != null && ballScript.hasLaunched;
         if (collision.gameObject.CompareTag("Ball"))
         {
+            Rigidbody2D ballRb = collision.rigidbody;
             if (attack_flag || slide_attack_flag)
             {
-                Rigidbody2D ballRb = collision.rigidbody;
-
                 Vector2 collisionPoint = collision.contacts[0].point;
                 Vector2 playerPosition = transform.position;
                 Vector2 collisionDirection = (collisionPoint - playerPosition).normalized;
@@ -259,7 +265,7 @@ public class PlayerController : MonoBehaviour
                 Vector2 forceDirection = new Vector2(collisionDirection.x * horizontalStrength, verticalStrength).normalized;
 
                 float ballSpeed = ballRb.velocity.magnitude;
-                float speedMultiplier = Mathf.Clamp(ballSpeed / 5.0f, 0.8f, 1.5f);
+                float speedMultiplier = Mathf.Clamp(ballSpeed / 5.0f, 0.7f, 1.6f);
 
                 if (ballSpeed < 2.0f)
                 {
@@ -272,12 +278,18 @@ public class PlayerController : MonoBehaviour
                 float angularForce = rotationSpeed * rotationMultiplier * -Mathf.Sign(collisionDirection.x);
 
                 ballRb.velocity = Vector2.zero;
-                ballRb.AddForce(forceDirection * 13.0f * speedMultiplier, ForceMode2D.Impulse);
+                ballRb.AddForce(forceDirection * 11.0f * speedMultiplier, ForceMode2D.Impulse);
                 ballRb.angularVelocity = angularForce * 2.0f;
             }
-
-            if(hasLaunched == true && !attack_flag && !slide_attack_flag)
+            if (hasLaunched == true && !attack_flag && !slide_attack_flag)
+            {
                 LoseLife();
+                if (ballRb.velocity.magnitude > 11.0f)
+                {
+                    ballRb.velocity *= 0.6f;
+                    ballRb.angularVelocity *= 0.6f;
+                }
+            }
         }
     }
 
@@ -285,7 +297,7 @@ public class PlayerController : MonoBehaviour
     {
         spriteRenderer.sprite = newSprite;
         spriteRenderer.transform.localScale = size;
-        spriteRenderer.transform.localPosition = (Vector3)offset; 
+        spriteRenderer.transform.localPosition = (Vector3)offset;
     }
 
     public void LoseLife()

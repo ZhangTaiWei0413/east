@@ -13,6 +13,7 @@ TagManager:
   - C_Block
   - D_Ball
   - Fake_Wall
+  - boom
   layers:
   - Default
   - TransparentFX

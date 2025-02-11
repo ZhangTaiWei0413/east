@@ -45,5 +45,9 @@ public class D_Ball : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        else if (other.CompareTag("boom"))
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -2463,12 +2463,12 @@ MonoBehaviour:
   boom_flag: 0
   slide_l_or_r: 0
   bullet_exists: 0
-  playermove: 0.15
-  playerslide: 0.3
+  playermove: 9
+  playerslide: 27
   score: 0
   life: 0
   idleSprite: {fileID: 21300000, guid: 8ccfff082d66f7642b4e0f1541560eae, type: 3}
-  walkSprite1: {fileID: 21300000, guid: 8ccfff082d66f7642b4e0f1541560eae, type: 3}
+  walkSprite1: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
   walkSprite2: {fileID: 21300000, guid: 8ccfff082d66f7642b4e0f1541560eae, type: 3}
   attackSprite: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
   slideSprite: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
@@ -2492,14 +2492,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1201115689}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 100
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 509cb07d89c252f4dab71342c7484356, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2510,7 +2510,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 6
 --- !u!4 &1201115694
 Transform:
   m_ObjectHideFlags: 0

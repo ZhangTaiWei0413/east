@@ -40,4 +40,10 @@ public class A_Block : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void TriggerBoom()
+    {
+        Instantiate(B_BlockPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
 }
