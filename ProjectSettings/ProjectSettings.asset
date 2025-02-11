@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: "\u6771\u65B9"
   productName: "\u6771\u65B9"
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}

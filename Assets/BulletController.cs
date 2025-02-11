@@ -14,7 +14,11 @@ public class BulletController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         Vector2 newPosition = rb.position + new Vector2(0, speed * Time.fixedDeltaTime);
         rb.MovePosition(newPosition);
-        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("the cube"), true);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("A_Block"), true);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("B_Block"), true);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("C_Block"), true);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("D_Ball"), true);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("Fake_Wall"), true);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullet"), LayerMask.NameToLayer("Player"), true);
     }
 

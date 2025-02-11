@@ -6,12 +6,14 @@ public class PlayerController : MonoBehaviour
 {
     public GameObject bulletPrefab;
     public GameObject BOOM;
+    private BallBehavior ballScript;
     public bool attack_flag = false;
     public bool slide_attack_flag = false;
     public bool bullet_flag = false;
     public bool boom_flag = false;
     public bool slide_l_or_r;
     public bool bullet_exists = false;
+
     float attack_time = 0.5f;
     float slide_attack_time = 0.3f;
     float bullet_attack_time = 0.3f;
@@ -21,6 +23,12 @@ public class PlayerController : MonoBehaviour
     float slide_attack_cnt = 0.0f;
     float bullet_attack_cnt = 0.0f;
     float boom_attack_cnt = 0.0f;
+
+    public float playermove = 0.1f;
+    public float playerslide = 0.3f;
+    public int score;
+    public int life;
+
     //圖片控制
     public Sprite idleSprite;   
     public Sprite walkSprite1; 
@@ -51,8 +59,14 @@ public class PlayerController : MonoBehaviour
         slide_attack_cnt = 0.0f;
         bullet_attack_cnt = 0.0f;
         boom_attack_cnt = 0.0f;
+        life = 20;
         spriteRenderer = transform.Find("SpriteContainer").GetComponent<SpriteRenderer>();
         SetSprite(idleSprite, idleSize, idleOffset);
+        GameObject ball = GameObject.FindGameObjectWithTag("Ball");
+        if (ball != null)
+        {
+            ballScript = ball.GetComponent<BallBehavior>();
+        }
     }
 
     void Update()//攻擊狀態
@@ -61,6 +75,7 @@ public class PlayerController : MonoBehaviour
         slide_attack_cnt += Time.deltaTime;
         bullet_attack_cnt += Time.deltaTime;
         boom_attack_cnt += Time.deltaTime;
+        bool hasLaunched = ballScript != null && ballScript.hasLaunched;
 
         if (attack_cnt >= attack_time)
         {
@@ -82,62 +97,10 @@ public class PlayerController : MonoBehaviour
             boom_flag = false;
         }
 
-        if (slide_attack_cnt >= slide_attack_time && attack_cnt >= attack_time && bullet_attack_cnt >= bullet_attack_time)
+        //令牌>滑鏟>拍球>移動
+        if (bullet_flag == false)
         {
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q) && boom_flag == false)
-        {
-            boom_flag = true;
-            boom_attack_cnt = 0.0f;
-            CreateTemporaryBall();
-        }
-
-        void CreateTemporaryBall()
-        {
-            GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
-
-            foreach (GameObject ball in balls)
-            {
-                if (BOOM != null)
-                {
-                    GameObject tempBall = Instantiate(BOOM, ball.transform.position, Quaternion.identity);
-                    Destroy(tempBall, boom_attack_time);
-                }
-            }
-        }
-
-        if (!slide_attack_flag && !attack_flag && !bullet_flag)
-        {
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-            {
-                walkTimer += Time.deltaTime;
-                if (walkTimer >= walkswitch)
-                {
-                    walkTimer = 0;
-                    SetSprite((spriteRenderer.sprite == walkSprite1) ? walkSprite2 : walkSprite1, walkSize, walkOffset);
-                }
-                if (Input.GetKey(KeyCode.D))
-                {
-                    spriteRenderer.flipX = false;
-                }
-                else
-                {
-                    spriteRenderer.flipX = true;
-                }
-            }
-            else
-            {
-                SetSprite(idleSprite, idleSize, idleOffset);
-            }     
-        }
-    }
-
-    private void FixedUpdate()//移動&攻擊指令
-    {
-        if (bullet_flag == false) 
-        {
-            if (Input.GetKey(KeyCode.E) && bullet_exists == false)
+            if (hasLaunched == true && Input.GetKey(KeyCode.E) && bullet_exists == false)
             {
                 attack_flag = false;
                 slide_attack_flag = false;
@@ -145,14 +108,16 @@ public class PlayerController : MonoBehaviour
                 bullet_exists = true;
                 bullet_attack_cnt = 0.0f;
                 SetSprite(bulletSprite, bulletSize, bulletOffset);
-                InstantiateBullet();
-                
+                if (bulletPrefab != null)
+                {
+                    Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+                }
             }
             else if (slide_attack_flag == false)
             {
                 if (Input.GetKey(KeyCode.A))
                 {
-                    if (Input.GetKey(KeyCode.LeftShift))
+                    if (hasLaunched == true && Input.GetKey(KeyCode.LeftShift))
                     {
                         attack_flag = false;
                         slide_l_or_r = true;
@@ -163,13 +128,28 @@ public class PlayerController : MonoBehaviour
                     }
                     else if (attack_flag == false)
                     {
-                        transform.localPosition += Vector3.left * 0.1f;
+                        if (Input.GetKeyDown(KeyCode.A))
+                        {
+                            walkTimer = 0;
+                        }
+                        walkTimer += Time.deltaTime;
+                        int switchCount = Mathf.FloorToInt(walkTimer / walkswitch);
+                        if (switchCount % 2 == 0)
+                        {
+                            SetSprite(walkSprite1, walkSize, walkOffset);
+                        }
+                        else
+                        {
+                            SetSprite(walkSprite2, walkSize, walkOffset);
+                        }
+                        spriteRenderer.flipX = true;
+                        transform.localPosition += Vector3.left * playermove * Time.deltaTime * 60f;
                     }
                 }
 
                 if (Input.GetKey(KeyCode.D))
                 {
-                    if (Input.GetKey(KeyCode.LeftShift))
+                    if (hasLaunched == true && Input.GetKey(KeyCode.LeftShift))
                     {
                         attack_flag = false;
                         slide_l_or_r = false;
@@ -180,7 +160,22 @@ public class PlayerController : MonoBehaviour
                     }
                     else if (attack_flag == false)
                     {
-                        transform.localPosition += Vector3.right * 0.1f;
+                        if (Input.GetKeyDown(KeyCode.D))
+                        {
+                            walkTimer = 0;
+                        }
+                        walkTimer += Time.deltaTime;
+                        int switchCount = Mathf.FloorToInt(walkTimer / walkswitch);
+                        if (switchCount % 2 == 0)
+                        {
+                            SetSprite(walkSprite1, walkSize, walkOffset);
+                        }
+                        else
+                        {
+                            SetSprite(walkSprite2, walkSize, walkOffset);
+                        }
+                        spriteRenderer.flipX = false;
+                        transform.localPosition += Vector3.right * playermove * Time.deltaTime * 60f;
                     }
 
                 }
@@ -196,36 +191,55 @@ public class PlayerController : MonoBehaviour
                         float ballX = ball.transform.position.x;
                         spriteRenderer.flipX = playerX > ballX;
                     }
-
                     SetSprite(attackSprite, attackSize, attackOffset);
                 }
             }
 
         }
 
+        //滑鏟方向判定
         if (slide_attack_flag)
         {
             if ((slide_l_or_r))
             {
-                transform.localPosition += Vector3.left * 0.3f;
+                transform.localPosition += Vector3.left * playerslide * Time.deltaTime * 60f;
             }
             else
             {
-                transform.localPosition += Vector3.right * 0.3f;
+                transform.localPosition += Vector3.right * playerslide * Time.deltaTime * 60f;
             }
         }
 
-        void InstantiateBullet()
+        //大招
+        if (hasLaunched == true && Input.GetKeyDown(KeyCode.Q) && boom_flag == false)
         {
-            if (bulletPrefab != null)
+            boom_flag = true;
+            boom_attack_cnt = 0.0f;
+            GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
+            foreach (GameObject ball in balls)
             {
-                Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+                if (BOOM != null)
+                {
+                    GameObject tempBall = Instantiate(BOOM, ball.transform.position, Quaternion.identity);
+                    Destroy(tempBall, boom_attack_time);
+                }
+            }
+        }
+
+        //走路圖片
+        if (!slide_attack_flag && !attack_flag && !bullet_flag)
+        {
+            if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+            {
+                walkTimer = 0;
+                SetSprite(idleSprite, idleSize, idleOffset);
             }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)//攻擊效果
     {
+        bool hasLaunched = ballScript != null && ballScript.hasLaunched;
         if (collision.gameObject.CompareTag("Ball"))
         {
             if (attack_flag || slide_attack_flag)
@@ -258,9 +272,12 @@ public class PlayerController : MonoBehaviour
                 float angularForce = rotationSpeed * rotationMultiplier * -Mathf.Sign(collisionDirection.x);
 
                 ballRb.velocity = Vector2.zero;
-                ballRb.AddForce(forceDirection * 10.0f * speedMultiplier, ForceMode2D.Impulse);
-                ballRb.angularVelocity = angularForce;
+                ballRb.AddForce(forceDirection * 13.0f * speedMultiplier, ForceMode2D.Impulse);
+                ballRb.angularVelocity = angularForce * 2.0f;
             }
+
+            if(hasLaunched == true && !attack_flag && !slide_attack_flag)
+                LoseLife();
         }
     }
 
@@ -269,5 +286,16 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.sprite = newSprite;
         spriteRenderer.transform.localScale = size;
         spriteRenderer.transform.localPosition = (Vector3)offset; 
+    }
+
+    public void LoseLife()
+    {
+        life -= 1;
+        Debug.Log(life);
+
+        if (life <= 0)
+        {
+            Debug.Log("die");
+        }
     }
 }

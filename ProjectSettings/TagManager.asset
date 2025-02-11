@@ -8,6 +8,11 @@ TagManager:
   - Wall
   - Bullet
   - the cube
+  - A_Block
+  - B_Block
+  - C_Block
+  - D_Ball
+  - Fake_Wall
   layers:
   - Default
   - TransparentFX
@@ -15,14 +20,14 @@ TagManager:
   - Wall
   - Water
   - UI
-  - the cube
+  - A_Block
   - Bullet
   - boom
   - Player
-  - 
-  - 
-  - 
-  - 
+  - B_Block
+  - C_Block
+  - D_Ball
+  - Fake_Wall
   - 
   - 
   - 
