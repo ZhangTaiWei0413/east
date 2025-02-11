@@ -2183,9 +2183,9 @@ Transform:
   m_GameObject: {fileID: 1142652669}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.59, y: -0.06, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 1.66, z: 0}
+  m_LocalScale: {x: 1.17, y: 1.17, z: 1.17}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1201115694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2230,7 +2230,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 8ccfff082d66f7642b4e0f1541560eae, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a462e7111a9a978408813c9c76ba0d6c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2467,22 +2467,33 @@ MonoBehaviour:
   playerslide: 27
   score: 0
   life: 0
-  idleSprite: {fileID: 21300000, guid: 8ccfff082d66f7642b4e0f1541560eae, type: 3}
-  walkSprite1: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
-  walkSprite2: {fileID: 21300000, guid: 8ccfff082d66f7642b4e0f1541560eae, type: 3}
-  attackSprite: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
-  slideSprite: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
-  bulletSprite: {fileID: 21300000, guid: a7b2dfad574919a49ac85a5d0591e402, type: 3}
-  idleSize: {x: 1, y: 1}
-  walkSize: {x: 1, y: 1}
-  attackSize: {x: 1, y: 1}
-  slideSize: {x: 1, y: 1}
-  bulletSize: {x: 1, y: 1}
-  idleOffset: {x: 0, y: 0}
-  walkOffset: {x: 0, y: 0}
-  attackOffset: {x: 0, y: 0}
-  slideOffset: {x: 0, y: 0}
-  bulletOffset: {x: 0, y: 0}
+  idleSprite: {fileID: 21300000, guid: a462e7111a9a978408813c9c76ba0d6c, type: 3}
+  walkSprites:
+  - {fileID: 21300000, guid: 4905b1e9f19fef646a0eea78a236faea, type: 3}
+  - {fileID: 21300000, guid: d8b81a4a291f45c49bb220841a5acebe, type: 3}
+  - {fileID: 21300000, guid: 1b076c05db067684aaf6544594bd4a70, type: 3}
+  attackSprites:
+  - {fileID: 21300000, guid: 6ad6460a122659247a25ec53d663fca2, type: 3}
+  - {fileID: 21300000, guid: d25e53326593c784b999249629c7ec37, type: 3}
+  - {fileID: 21300000, guid: 0e3f980ee39dd0240a593de39954e368, type: 3}
+  - {fileID: 21300000, guid: 5e67e1d7fa2e8bd43a38a80becf68a01, type: 3}
+  bulletSprites:
+  - {fileID: 21300000, guid: a462e7111a9a978408813c9c76ba0d6c, type: 3}
+  - {fileID: 21300000, guid: ce9f7654c68b77a49af6709b5bb2e967, type: 3}
+  - {fileID: 21300000, guid: 3954269ff5c7d3c4c80c803d87de4629, type: 3}
+  slideSprites:
+  - {fileID: 21300000, guid: 0b9a36face0f42e47a50a683090beb0b, type: 3}
+  - {fileID: 21300000, guid: b0cc44af42186744fb566fe66fd0743b, type: 3}
+  idleSize: {x: 1.17, y: 1.17}
+  walkSize: {x: 1.17, y: 1.17}
+  attackSize: {x: 1.17, y: 1.17}
+  slideSize: {x: 1.17, y: 1.17}
+  bulletSize: {x: 1.17, y: 1.17}
+  idleOffset: {x: 0, y: 1.66}
+  walkOffset: {x: 0, y: 1.66}
+  attackOffset: {x: 0, y: 1.66}
+  slideOffset: {x: 0, y: 1.66}
+  bulletOffset: {x: 0, y: 1.66}
   walkswitch: 0.25
 --- !u!50 &1201115691
 Rigidbody2D:

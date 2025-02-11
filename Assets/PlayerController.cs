@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     public bool slide_l_or_r;
     public bool bullet_exists = false;
 
-    float attack_time = 0.5f;
+    float attack_time = 0.3f;
     float slide_attack_time = 0.15f;
     float bullet_attack_time = 0.3f;
     float boom_attack_time = 0.3f;
@@ -29,15 +29,12 @@ public class PlayerController : MonoBehaviour
     public int score;
     public int life;
     private Rigidbody2D rb;
-    private bool isTouchingWallOrSide;
 
-    //圖片控制
     public Sprite idleSprite;
-    public Sprite walkSprite1;
-    public Sprite walkSprite2;
-    public Sprite attackSprite;
-    public Sprite slideSprite;
-    public Sprite bulletSprite;
+    public Sprite[] walkSprites;   
+    public Sprite[] attackSprites;  
+    public Sprite[] bulletSprites; 
+    public Sprite[] slideSprites;   
 
     public Vector2 idleSize = Vector2.one;
     public Vector2 walkSize = Vector2.one;
@@ -73,7 +70,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Update()//攻擊狀態
+    void Update()
     {
         attack_cnt += Time.deltaTime;
         slide_attack_cnt += Time.deltaTime;
@@ -85,26 +82,23 @@ public class PlayerController : MonoBehaviour
         {
             attack_flag = false;
         }
-
         if (slide_attack_cnt >= slide_attack_time)
         {
             slide_attack_flag = false;
         }
-
         if (bullet_attack_cnt >= bullet_attack_time)
         {
             bullet_flag = false;
         }
-
         if (boom_attack_cnt >= boom_attack_cool)
         {
             boom_flag = false;
         }
 
-        //令牌>滑鏟>拍球>移動
-        if (bullet_flag == false)
+        //子彈 > 滑行 > 拍球 > 移動
+        if (!bullet_flag)
         {
-            if (hasLaunched == true && Input.GetKey(KeyCode.E) && bullet_exists == false)
+            if (hasLaunched && Input.GetKey(KeyCode.E) && !bullet_exists)
             {
                 rb.velocity = Vector2.zero;
                 attack_flag = false;
@@ -112,80 +106,58 @@ public class PlayerController : MonoBehaviour
                 bullet_flag = true;
                 bullet_exists = true;
                 bullet_attack_cnt = 0.0f;
-                SetSprite(bulletSprite, bulletSize, bulletOffset);
                 if (bulletPrefab != null)
                 {
                     Instantiate(bulletPrefab, transform.position, Quaternion.identity);
                 }
             }
-            else if (slide_attack_flag == false)
+            else if (!slide_attack_flag)
             {
                 if (Input.GetKey(KeyCode.A))
                 {
-                    if (hasLaunched == true && Input.GetKey(KeyCode.LeftShift))
+                    if (hasLaunched && Input.GetKey(KeyCode.LeftShift))
                     {
                         attack_flag = false;
                         slide_l_or_r = true;
                         slide_attack_flag = true;
                         slide_attack_cnt = 0.0f;
-                        SetSprite(slideSprite, slideSize, slideOffset);
                         spriteRenderer.flipX = true;
                     }
-                    else if (attack_flag == false)
+                    else if (!attack_flag)
                     {
                         if (Input.GetKeyDown(KeyCode.A))
                         {
                             walkTimer = 0;
                         }
                         walkTimer += Time.deltaTime;
-                        int switchCount = Mathf.FloorToInt(walkTimer / walkswitch);
-                        if (switchCount % 2 == 0)
-                        {
-                            SetSprite(walkSprite1, walkSize, walkOffset);
-                        }
-                        else
-                        {
-                            SetSprite(walkSprite2, walkSize, walkOffset);
-                        }
                         spriteRenderer.flipX = true;
-                        rb.velocity = new Vector2(-1 * playermove, rb.velocity.y);
+                        rb.velocity = new Vector2(-playermove, rb.velocity.y);
                     }
                 }
 
                 if (Input.GetKey(KeyCode.D))
                 {
-                    if (hasLaunched == true && Input.GetKey(KeyCode.LeftShift))
+                    if (hasLaunched && Input.GetKey(KeyCode.LeftShift))
                     {
                         attack_flag = false;
                         slide_l_or_r = false;
                         slide_attack_flag = true;
                         slide_attack_cnt = 0.0f;
-                        SetSprite(slideSprite, slideSize, slideOffset);
                         spriteRenderer.flipX = false;
                     }
-                    else if (attack_flag == false)
+                    else if (!attack_flag)
                     {
                         if (Input.GetKeyDown(KeyCode.D))
                         {
                             walkTimer = 0;
                         }
                         walkTimer += Time.deltaTime;
-                        int switchCount = Mathf.FloorToInt(walkTimer / walkswitch);
-                        if (switchCount % 2 == 0)
-                        {
-                            SetSprite(walkSprite1, walkSize, walkOffset);
-                        }
-                        else
-                        {
-                            SetSprite(walkSprite2, walkSize, walkOffset);
-                        }
                         spriteRenderer.flipX = false;
-                        rb.velocity = new Vector2(1 * playermove, rb.velocity.y);
+                        rb.velocity = new Vector2(playermove, rb.velocity.y);
                     }
-
                 }
 
-                if (Input.GetKey(KeyCode.Space) && attack_flag == false)
+                if (Input.GetKey(KeyCode.Space) && !attack_flag)
                 {
                     rb.velocity = Vector2.zero;
                     attack_flag = true;
@@ -197,27 +169,23 @@ public class PlayerController : MonoBehaviour
                         float ballX = ball.transform.position.x;
                         spriteRenderer.flipX = playerX > ballX;
                     }
-                    SetSprite(attackSprite, attackSize, attackOffset);
                 }
             }
-
         }
 
-        //滑鏟方向判定
         if (slide_attack_flag)
         {
-            if ((slide_l_or_r))
+            if (slide_l_or_r)
             {
-                rb.velocity = new Vector2(-1 * playerslide, rb.velocity.y);
+                rb.velocity = new Vector2(-playerslide, rb.velocity.y);
             }
             else
             {
-                rb.velocity = new Vector2(1 * playerslide, rb.velocity.y);
+                rb.velocity = new Vector2(playerslide, rb.velocity.y);
             }
         }
 
-        //大招
-        if (hasLaunched == true && Input.GetKeyDown(KeyCode.Q) && boom_flag == false)
+        if (hasLaunched && Input.GetKeyDown(KeyCode.Q) && !boom_flag)
         {
             boom_flag = true;
             boom_attack_cnt = 0.0f;
@@ -232,19 +200,46 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        //走路圖片
         if (!slide_attack_flag && !attack_flag && !bullet_flag)
         {
             if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
             {
                 walkTimer = 0;
-                SetSprite(idleSprite, idleSize, idleOffset);
-                rb.velocity = Vector2.zero;   
+                rb.velocity = Vector2.zero;
             }
+        }
+
+        if (bullet_flag)
+        {
+            int frame = Mathf.FloorToInt((bullet_attack_cnt / bullet_attack_time) * bulletSprites.Length);
+            if (frame >= bulletSprites.Length) frame = bulletSprites.Length - 1;
+            SetSprite(bulletSprites[frame], bulletSize, bulletOffset);
+        }
+        else if (slide_attack_flag)
+        {
+            int frame = Mathf.FloorToInt((slide_attack_cnt / slide_attack_time) * slideSprites.Length);
+            if (frame >= slideSprites.Length) frame = slideSprites.Length - 1;
+            SetSprite(slideSprites[frame], slideSize, slideOffset);
+        }
+        else if (attack_flag)
+        {
+            int frame = Mathf.FloorToInt((attack_cnt / attack_time) * attackSprites.Length);
+            if (frame >= attackSprites.Length) frame = attackSprites.Length - 1;
+            SetSprite(attackSprites[frame], attackSize, attackOffset);
+        }
+        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+        {
+            int cycle = ((int)(walkTimer / walkswitch)) % 4;
+            int index = (cycle == 3) ? 1 : cycle;
+            SetSprite(walkSprites[index], walkSize, walkOffset);
+        }
+        else
+        {
+            SetSprite(idleSprite, idleSize, idleOffset);
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)//攻擊效果
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         bool hasLaunched = ballScript != null && ballScript.hasLaunched;
         if (collision.gameObject.CompareTag("Ball"))
@@ -279,9 +274,10 @@ public class PlayerController : MonoBehaviour
 
                 ballRb.velocity = Vector2.zero;
                 ballRb.AddForce(forceDirection * 11.0f * speedMultiplier, ForceMode2D.Impulse);
+
                 ballRb.angularVelocity = angularForce * 2.0f;
             }
-            if (hasLaunched == true && !attack_flag && !slide_attack_flag)
+            if (hasLaunched && !attack_flag && !slide_attack_flag)
             {
                 LoseLife();
                 if (ballRb.velocity.magnitude > 11.0f)
@@ -304,7 +300,6 @@ public class PlayerController : MonoBehaviour
     {
         life -= 1;
         Debug.Log(life);
-
         if (life <= 0)
         {
             Debug.Log("die");
